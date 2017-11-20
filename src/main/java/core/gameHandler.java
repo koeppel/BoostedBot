@@ -106,6 +106,7 @@ public class gameHandler {
                 game.setgHandler(this);
                 this.games.put(this.jda.getTextChannelById(entry.getKey()), game);
             }
+            in.close();
         }
         catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
