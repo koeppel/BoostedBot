@@ -12,7 +12,7 @@ import net.dv8tion.jda.core.requests.restaction.*;
 import java.util.Collection;
 import java.util.List;
 
-public class joinListener extends ListenerAdapter {
+public class JoinListener extends ListenerAdapter {
 
     public void onGuildJoin(GuildJoinEvent event) {
         System.out.println("Bot Joined Server: '" + event.getGuild().getName() + "' with ID + " + event.getGuild().getId());

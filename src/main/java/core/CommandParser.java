@@ -5,7 +5,7 @@ import utils.STATIC;
 
 import java.util.ArrayList;
 
-public class commandParser {
+public class CommandParser {
 
     public static commandContainer parser(String raw, MessageReceivedEvent event) {
 

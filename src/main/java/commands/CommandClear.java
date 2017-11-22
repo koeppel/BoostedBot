@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class commandClear implements Command {
+public class CommandClear implements Command {
 
     EmbedBuilder error = new EmbedBuilder().setColor(Color.RED);
     EmbedBuilder sucess = new EmbedBuilder().setColor(Color.GREEN);

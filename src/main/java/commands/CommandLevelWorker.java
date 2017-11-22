@@ -5,7 +5,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.awt.*;
 
-public class commandLevelWorker implements Command {
+public class CommandLevelWorker implements Command {
 
     EmbedBuilder error = new EmbedBuilder().setColor(Color.RED);
     EmbedBuilder sucess = new EmbedBuilder().setColor(Color.GREEN);

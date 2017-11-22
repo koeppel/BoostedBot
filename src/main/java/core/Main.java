@@ -1,11 +1,12 @@
 package core;
 
-import commands.commandClear;
-import commands.commandGameChannels;
-import commands.commandLevelWorker;
-import listeners.commandListener;
-import listeners.joinListener;
-import listeners.readyListener;
+import commands.CommandClear;
+import commands.CommandGameChannels;
+import commands.CommandKey;
+import commands.CommandLevelWorker;
+import listeners.CommandListener;
+import listeners.JoinListener;
+import listeners.ReadyListener;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -29,7 +30,7 @@ public class Main {
         builder.setAutoReconnect(CONFIG.RECONNECT);
 
         builder.setStatus(OnlineStatus.ONLINE);
-        builder.setGame(Game.of("Boosted Idle Game"));
+        builder.setGame(Game.of("Boosted af"));
 
         loadListeners(builder);
         loadCommands();
@@ -46,14 +47,15 @@ public class Main {
     }
 
     private static void loadCommands() {
-        commandHandler.commands.put("clear", new commandClear());
-        commandHandler.commands.put("gameChannels", new commandGameChannels());
-        commandHandler.commands.put("lvlWorker", new commandLevelWorker());
+        CommandHandler.commands.put("clear", new CommandClear());
+        CommandHandler.commands.put("gameChannels", new CommandGameChannels());
+        CommandHandler.commands.put("lvlWorker", new CommandLevelWorker());
+        CommandHandler.commands.put("key", new CommandKey());
     }
 
     private static void loadListeners(JDABuilder builder) {
-        builder.addEventListener(new readyListener());
-        builder.addEventListener(new joinListener());
-        builder.addEventListener(new commandListener());
+        builder.addEventListener(new ReadyListener());
+        builder.addEventListener(new JoinListener());
+        builder.addEventListener(new CommandListener());
     }
 }

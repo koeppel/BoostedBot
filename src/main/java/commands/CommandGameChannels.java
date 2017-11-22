@@ -10,7 +10,7 @@ import java.awt.Color;
 import java.io.*;
 import java.util.*;
 
-public class commandGameChannels implements Command, Serializable {
+public class CommandGameChannels implements Command, Serializable {
 
     private static HashMap<TextChannel, Guild> gameChannels = new HashMap<>();
     private static final String filePath = CONFIG.SAVEPATH;

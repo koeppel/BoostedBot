@@ -1,4 +1,4 @@
-package core;
+package idleGame;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

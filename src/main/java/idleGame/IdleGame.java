@@ -1,8 +1,7 @@
-package core;
+package idleGame;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;

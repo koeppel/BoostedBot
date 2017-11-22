@@ -4,12 +4,12 @@ import commands.Command;
 
 import java.util.HashMap;
 
-public class commandHandler {
+public class CommandHandler {
 
-    public static final commandParser parse = new commandParser();
+    public static final CommandParser parse = new CommandParser();
     public static HashMap<String, Command> commands = new HashMap<>();
 
-    public static void handleCommand (commandParser.commandContainer cmd) {
+    public static void handleCommand (CommandParser.commandContainer cmd) {
         if (commands.containsKey(cmd.invoke)) {
             boolean safe = commands.get(cmd.invoke).called(cmd.args, cmd.event);
 
