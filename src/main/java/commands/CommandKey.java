@@ -257,6 +257,14 @@ public class CommandKey implements Command {
         else if(args[0].equals("delete")) {
             if(!(args.length < 2)) {
                 ksh.deleteKeyStone(args[1]);
+                ksh.saveKeystonesToFile();
+            }
+        }
+        // -- UPDATE
+        else if(args[0].equals("update")) {
+            if(!(args.length < 2)) {
+                ksh.update(args[1], eb);
+                ksh.saveKeystonesToFile();
             }
         }
         else {

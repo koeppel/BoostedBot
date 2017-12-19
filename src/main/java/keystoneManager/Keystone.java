@@ -178,20 +178,20 @@ public class Keystone {
         }
         for (String role : roles.keySet()) {
             try {
-                System.out.println(role + roles.get(role));
+                System.out.println(role + roles.get(role) + "  " + roles.get(role).values());
                 if(roles.get(role).values().isEmpty()) {
                     eb.addField(getRoleIcon(role) + role + getRoleIcon(role), "No " + role + " joined yet!", false);
                 }
                 else {
                     if(role.equals("DPS")) {
                         String tempDPS = "";
-                        for (String user : roles.get(role).keySet()) {
+                        for (String user : roles.get(role).values()) {
                             tempDPS += "\n" + user;
                         }
                         eb.addField(getRoleIcon(role) + roles.get(role).size() + "/3 DPS" +getRoleIcon(role), tempDPS, false);
                     }
                     else {
-                        eb.addField(getRoleIcon(role) + "1/1 " + role + getRoleIcon(role), roles.get(role).get(0).toString() , false);
+                        eb.addField(getRoleIcon(role) + "1/1 " + role + getRoleIcon(role), roles.get(role).values().iterator().next() , false);
                     }
                 }
             }

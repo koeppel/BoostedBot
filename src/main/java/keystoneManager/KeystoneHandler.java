@@ -108,6 +108,11 @@ public class KeystoneHandler {
         eb.setTitle(ebTitle);
     }
 
+    // Update Key
+    public void update(String id, EmbedBuilder eb) {
+        this.keystonesById.get(id).updateMessage(eb, this.guild);
+    }
+
     // Saving and Loading the <Keystone, String> (Keystone, TextChannelID) to a File in json format
     public void saveKeystonesToFile() {
         ObjectMapper mapper = new ObjectMapper();
