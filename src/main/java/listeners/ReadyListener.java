@@ -1,5 +1,8 @@
 package listeners;
 
+import commands.CommandKey;
+import core.CommandHandler;
+import keystoneManager.KeystoneHandler;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -7,11 +10,21 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import java.io.Serializable;
 import java.util.HashMap;
 
+
 public class ReadyListener extends ListenerAdapter implements Serializable {
-    private HashMap<TextChannel, Guild> gameChannels = new HashMap<>();
+    //private HashMap<TextChannel, Guild> gameChannels = new HashMap<>();
 
     public void onReady(ReadyEvent event) {
         System.out.println("Bot Ready!");
+
+        for (Guild g : event.getJDA().getGuilds()) {
+            KeystoneHandler ksh = new KeystoneHandler(g);
+            ksh.loadKeystonesFromFile();
+            ksh.checkGuildRoles();
+
+            CommandKey.addKeystoneHandler(g, ksh);
+        }
+
 
 //        CommandGameChannels.loadChannels(event.getJDA());
 //
@@ -23,6 +36,10 @@ public class ReadyListener extends ListenerAdapter implements Serializable {
 //                .forEach(gameChannel -> {
 //                    new gameHandler(event.getJDA(), gameChannel).run();
 //                });
+//        }
+
+//        for (Guild g : event.getJDA().getGuilds()) {
+//
 //        }
     }
 }

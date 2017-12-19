@@ -1,9 +1,6 @@
 package core;
 
-import commands.CommandClear;
-import commands.CommandGameChannels;
-import commands.CommandKey;
-import commands.CommandLevelWorker;
+import commands.*;
 import listeners.CommandListener;
 import listeners.JoinListener;
 import listeners.ReadyListener;
@@ -51,6 +48,7 @@ public class Main {
         CommandHandler.commands.put("gameChannels", new CommandGameChannels());
         CommandHandler.commands.put("lvlWorker", new CommandLevelWorker());
         CommandHandler.commands.put("key", new CommandKey());
+        CommandHandler.commands.put("check", new CommandCheckPrice());
     }
 
     private static void loadListeners(JDABuilder builder) {
