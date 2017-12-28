@@ -1,15 +1,12 @@
 package listeners;
 
 import commands.CommandKey;
-import core.CommandHandler;
 import keystoneManager.KeystoneHandler;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.io.Serializable;
-import java.util.HashMap;
-
 
 public class ReadyListener extends ListenerAdapter implements Serializable {
     //private HashMap<TextChannel, Guild> gameChannels = new HashMap<>();

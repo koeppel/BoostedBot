@@ -24,7 +24,7 @@ public class IdleGame {
     private String msgID;
     private String channelID;
     private Timer gameTick = new Timer();
-    private gameHandler gHandler;
+    private GameHandler gHandler;
 
     private TextChannel gameChannel;
     private Message msg;
@@ -83,11 +83,11 @@ public class IdleGame {
         return this.jda;
     }
 
-    @JsonIgnore public void setgHandler(gameHandler gHandler) {
+    @JsonIgnore public void setgHandler(GameHandler gHandler) {
         this.gHandler = gHandler;
     }
 
-    @JsonIgnore public gameHandler getgHandler() {
+    @JsonIgnore public GameHandler getgHandler() {
         return this.gHandler;
     }
 
@@ -102,7 +102,7 @@ public class IdleGame {
                     JDA jda,
                     String msgID,
                     String channelID,
-                    gameHandler gameHandler) {
+                    GameHandler gameHandler) {
         this.cash = startCash;
         this.baseIncome = baseIncome;
         this.income = baseIncome;

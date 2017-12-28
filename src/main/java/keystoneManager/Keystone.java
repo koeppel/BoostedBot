@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 import utils.STATIC;
 
 import java.util.HashMap;
@@ -21,6 +19,10 @@ public class Keystone {
     private String name;
     private String fullName;
     private boolean sellRun;
+
+    private String authorName;
+    private String authorUrl;
+
     private User creator;
     private String creatorName;
     private String creatorUrl;
@@ -43,6 +45,22 @@ public class Keystone {
         this.completed = completed;
     }
 
+    public boolean hasMember(Member member) {
+        for (HashMap<String, String> role : this.roles.values()) {
+            if(role.containsValue(member.getUser().getName())) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    @JsonIgnore public boolean isFull() {
+        return (this.tank.size() == 1 && this.heal.size() == 1 && this.dps.size() == 3);
+    }
+
     public String getName() {
         return name;
     }
@@ -61,6 +79,14 @@ public class Keystone {
 
     public void setCreatorUrl(String creatorUrl) {
         this.creatorUrl = creatorUrl;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
+    }
+
+    public void setAuthorUrl(String authorUrl) {
+        this.authorUrl = authorUrl;
     }
 
     @JsonIgnore public User getCreator() {
@@ -135,23 +161,29 @@ public class Keystone {
         this.fullName = this.dungeons.get(this.name);
     }
 
+    public void alertMembers(Guild guild, User user) {
+        for (HashMap<String, String> role: roles.values()) {
+            for (Member member: guild.getMembers()) {
+                if(role.containsValue(member.getUser().getName())){
+                    PrivateChannel pc = member.getUser().openPrivateChannel().complete();
+                    pc.sendMessage("User " + user.getName() + " wants to play " + this.fullName + " " + this.level
+                    + " check out the Discord Server " + guild.getName() + " for more information!");
+                }
+            }
+        }
+    }
+
     public void delete (Guild g) {
-        g.getTextChannelById(this.channelId).getMessageById(this.id).complete().delete().queue();
+        try {
+            g.getTextChannelById(this.channelId).getMessageById(this.id).complete().delete().queue();
+        }
+        catch(NumberFormatException e) {
+            System.out.println("Error: The specified ID is not a valid snowflake");
+        }
     }
 
     public void join (User user, String role) {
-        boolean alreadyInKey = false;
-        for (String userRole : this.roles.keySet()) {
-            if(this.roles.get(userRole).containsKey(user.getId())) {
-                alreadyInKey = true;
-            }
-        }
-        if (!alreadyInKey) {
-            this.roles.get(role).put(user.getId(), user.getName());
-        }
-        else {
-            System.out.println("User already in key!");
-        }
+        this.roles.get(role).put(user.getId(), user.getName());
     }
 
     public void leave (String user) {
@@ -165,8 +197,13 @@ public class Keystone {
     public void updateMessage(EmbedBuilder eb, Guild g) {
         this.msg = g.getTextChannelById(this.channelId).getMessageById(this.id).complete();
         if (this.isCompleted()) {
-            eb.setThumbnail("http://t5.rbxcdn.com/78a4211079921cd8604d573ea33f48c3");
+            eb.setThumbnail(STATIC.COMPLETEDURL);
         }
+        else {
+            eb.setThumbnail(STATIC.KEYSTONEURL);
+        }
+
+        eb.setAuthor(this.authorName, null, this.authorUrl);
 
         eb.setTitle(this.dungeons.get(this.name) + " +" + level);
         // Checking for Creator == Null because it might be unset after loading from file

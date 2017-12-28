@@ -1,8 +1,11 @@
 package core;
 
 import commands.Command;
+import net.dv8tion.jda.core.entities.Message;
 
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class CommandHandler {
 
@@ -22,7 +25,13 @@ public class CommandHandler {
             }
 
         } else {
-            cmd.event.getTextChannel().sendMessage("Command not found!").queue();
+            Message msg = cmd.event.getTextChannel().sendMessage("Command not found!").complete();
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    msg.delete().queue();
+                }
+            }, 3000);
         }
     }
 

@@ -11,7 +11,7 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class gameHandler {
+public class GameHandler {
     private HashMap<TextChannel, IdleGame> games = new HashMap<>();
     private static final String filePath = CONFIG.SAVEPATH;
     private static final String fileName = filePath + "games.dat";
@@ -22,7 +22,7 @@ public class gameHandler {
         return this.games;
     }
 
-    public gameHandler(JDA jda, TextChannel gameChannel) {
+    public GameHandler(JDA jda, TextChannel gameChannel) {
         this.jda = jda;
         this.gameChannel = gameChannel;
     }

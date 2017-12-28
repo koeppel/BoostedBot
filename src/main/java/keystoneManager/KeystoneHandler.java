@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.managers.GuildController;
 import utils.CONFIG;
+import utils.STATIC;
 
 import java.io.*;
 import java.util.HashMap;
@@ -14,7 +16,6 @@ import java.util.Map;
 public class KeystoneHandler {
     // "Public" Variables
     private Guild guild;
-
 
     // Internal Variables
     private HashMap<Keystone, String> keystonesWithChannels = new HashMap<>();
@@ -28,6 +29,14 @@ public class KeystoneHandler {
 
     public void setGuild(Guild guild) {
         this.guild = guild;
+    }
+
+    public boolean containsKeystone(String id) {
+        return this.keystonesById.containsKey(id);
+    }
+
+    public Keystone getKeystone(String id) {
+        return this.keystonesById.get(id);
     }
 
     public HashMap<String, Keystone> getAvailableKeystones () {
@@ -56,7 +65,68 @@ public class KeystoneHandler {
         }
     }
 
-    // Deleting Keystones
+    // Alerting all Members in Keystone to join the Discord
+    public EmbedBuilder alertKeystone(String id, MessageReceivedEvent event, EmbedBuilder errorEB) {
+        if(this.containsKeystone(id)) {
+            Keystone ks = this.getKeystone(id);
+            if(!ks.isCompleted()) {
+                if(ks.isFull()){
+                    // ALERT MEMBERS
+                    ks.alertMembers(event.getGuild(), event.getAuthor());
+                    errorEB.setTitle("Members alerted!");
+                }
+                else {
+                    // NOT ENOUGH MEMBERS
+                    errorEB.setTitle("Not enough members!");
+                    for (String role : ks.getRoles().keySet()) {
+                        if (role.equals("TANK") && ks.getRoles().get(role).size() != 1) {
+                            errorEB.addField("TANK","1 TANK missing.",false);
+                        }
+                        else if(role.equals("HEAL") && ks.getRoles().get(role).size() != 1) {
+                            errorEB.addField("HEAL","1 HEAL missing.", false);
+                        }
+                        else if(role.equals("DPS") && ks.getRoles().get(role).size() < 3) {
+                            errorEB.addField("DPS",3 - ks.getRoles().get(role).size() + " DPS missing.", false);
+                        }
+                    }
+                }
+            }
+            else {
+                // KEYSTONE IS NOT AVAILABLE
+                errorEB.setTitle("Keystone is not available!");
+            }
+        }
+        else {
+            // Keystone doesn't exist
+            errorEB.setTitle("Keystone doesn't exist!");
+        }
+        return errorEB;
+    }
+
+    // Deleting all / all completed keystones
+    public void clearKeystones(boolean all) {
+        HashMap<String, Keystone> tempMap = new HashMap<>();
+        for (Keystone ks : this.keystonesById.values()) {
+            if(all) {
+                tempMap.put(ks.getId(), ks);
+            }
+            else {
+                if(ks.isCompleted()) {
+                    tempMap.put(ks.getId(), ks);
+                }
+            }
+        }
+
+        for (Keystone ks : tempMap.values()) {
+            this.keystonesById.remove(ks.getId(), ks);
+            this.keystonesWithChannels.remove(ks, ks.getChannelId());
+            ks.delete(this.guild);
+        }
+
+        this.saveKeystonesToFile();
+    }
+
+    // Deleting a single Keystone
     public void deleteKeyStone(String id) {
         Keystone ks = this.keystonesById.get(id);
         ks.delete(this.guild);
@@ -64,56 +134,63 @@ public class KeystoneHandler {
         this.keystonesWithChannels.remove(ks);
     }
 
-    // Joining Users to a Keystone
-    public void joinUser(String id, Member member, EmbedBuilder eb) {
+    // Joining User to a Keystone
+    public void joinUser(String id, Member member, EmbedBuilder errorEB, EmbedBuilder keystoneEB) {
         String memberRole = "";
         HashMap<String, Role> memberRoles = getRelevantRoles(getMemberRolesByName(member));
+        errorEB.clear();
 
-        if(memberRoles.isEmpty()) {
-            eb.setTitle(member.getNickname() + "has no relevant role! Get one before trying to enter a key!");
+        if(this.keystonesById.get(id).hasMember(member)) {
+            errorEB.setTitle(member.getUser().getName() + " is already in keystone!");
+        }
+        else if(memberRoles.isEmpty()) {
+            errorEB.setTitle(member.getUser().getName() + " has no relevant role! Get one before trying to enter a key!");
         }
         else if(memberRoles.size() > 1)  {
-            eb.setTitle("Member has more than 1 relevant Role!");
+            errorEB.setTitle("Member has more than 1 relevant Role!");
             String desc = "";
             for(String role : memberRoles.keySet()) {
                 desc += "\n" + role;
             }
-            desc += "\nChoose a role by typing '!bbkey join " + id + " ROLE [DPS/TANK/HEAL]'";
-            eb.setDescription(desc);
+            desc += "\nChoose a role by typing '" + STATIC.PREFIX + "key join " + id + " ROLE [DPS/TANK/HEAL]'";
+            errorEB.setDescription(desc);
         }
         else {
             memberRole = memberRoles.keySet().toString();
             memberRole = memberRole.replace("[", "");
             memberRole = memberRole.replace("]", "");
-            keystonesById.get(id).join(member.getUser(), memberRole);
-            keystonesById.get(id).updateMessage(eb, member.getGuild());
+            this.keystonesById.get(id).join(member.getUser(), memberRole);
+            this.keystonesById.get(id).updateMessage(keystoneEB, member.getGuild());
             saveKeystonesToFile();
         }
     }
 
-    public void joinUserByRole(String id, Member member, String role, EmbedBuilder eb) {
+    // Joining User to a Keystone with given Role
+    public void joinUserByRole(String id, Member member, String role, EmbedBuilder errorEB, EmbedBuilder keystoneEB) {
         HashMap<String, Role> memberRoles = getRelevantRoles(getMemberRolesByName(member));
         String ebTitle = "";
+        errorEB.clear();
         if(memberRoles.isEmpty()) {
             ebTitle = member.getNickname() + "has no relevant role! Get one before trying to enter a key!";
         }
         else if(memberRoles.containsKey(role)) {
-            keystonesById.get(id).join(member.getUser(), role);
-            keystonesById.get(id).updateMessage(eb, member.getGuild());
+            this.keystonesById.get(id).join(member.getUser(), role);
+            this.keystonesById.get(id).updateMessage(keystoneEB, member.getGuild());
             saveKeystonesToFile();
+            ebTitle = "Sucessfully joined Key as " + role;
         }
         else {
             ebTitle = "Given role " + role + " is not assigned to " + member.getUser().getName() + " make sure you are assinged to the role!";
         }
-        eb.setTitle(ebTitle);
+        errorEB.setTitle(ebTitle);
     }
 
     // Update Key
-    public void update(String id, EmbedBuilder eb) {
+    public void updateKeystone(String id, EmbedBuilder eb) {
         this.keystonesById.get(id).updateMessage(eb, this.guild);
     }
 
-    // Saving and Loading the <Keystone, String> (Keystone, TextChannelID) to a File in json format
+    // Saving the <Keystone, String> (Keystone, TextChannelID) to a File in json format
     public void saveKeystonesToFile() {
         ObjectMapper mapper = new ObjectMapper();
         HashMap<String, String> outPut = new HashMap<>();
@@ -137,6 +214,7 @@ public class KeystoneHandler {
         }
     }
 
+    // Loading the <Keystone, String> (Keystone, TextChannelID) from a json File
     public void loadKeystonesFromFile() {
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -168,6 +246,14 @@ public class KeystoneHandler {
         if(!guildRolesByName.containsKey("DPS")) {gc.createRole().setName("DPS").queue();}
     }
 
+    public HashMap<String, Role> getMemberRolesByName(Member member){
+        HashMap<String, Role> memberRolesByName = new HashMap<>();
+        for ( Role role : member.getRoles()) {
+            memberRolesByName.put(role.getName(), role);
+        }
+        return memberRolesByName;
+    }
+
     private HashMap<String, Role> getRelevantRoles(HashMap<String, Role> memberRolesByName) {
         HashMap<String, Role>relevantRoles = new HashMap<String, Role>();
 
@@ -182,14 +268,6 @@ public class KeystoneHandler {
         }
 
         return relevantRoles;
-    }
-
-    private HashMap<String, Role> getMemberRolesByName(Member member){
-        HashMap<String, Role> memberRolesByName = new HashMap<>();
-        for ( Role role : member.getRoles()) {
-            memberRolesByName.put(role.getName(), role);
-        }
-        return memberRolesByName;
     }
 
     private HashMap<String, Role> getGuildRolesByName(Guild g){
