@@ -6,11 +6,13 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.managers.GuildController;
+import net.dv8tion.jda.core.requests.Route;
 import utils.CONFIG;
 import utils.STATIC;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class KeystoneHandler {
@@ -50,6 +52,7 @@ public class KeystoneHandler {
         return keystones;
     }
 
+    // Constructor
     public KeystoneHandler(Guild guild) {
         this.guild = guild;
         this.fileNameKeystones = filePath + guild.getId() + "_keystones.dat";
@@ -70,10 +73,15 @@ public class KeystoneHandler {
         if(this.containsKeystone(id)) {
             Keystone ks = this.getKeystone(id);
             if(!ks.isCompleted()) {
-                if(ks.isFull()){
+                if(ks.isFull() && !ks.isAlerted()){
                     // ALERT MEMBERS
                     ks.alertMembers(event.getGuild(), event.getAuthor());
+                    ks.setAlerted(true);
                     errorEB.setTitle("Members alerted!");
+                }
+                else if(ks.isAlerted()) {
+                    // ALREADY ALERTED MEMBERS
+                    errorEB.setTitle("Already alerted members!");
                 }
                 else {
                     // NOT ENOUGH MEMBERS
@@ -101,6 +109,16 @@ public class KeystoneHandler {
             errorEB.setTitle("Keystone doesn't exist!");
         }
         return errorEB;
+    }
+
+    // Functions for some Guild and Member - Role things
+    public void checkGuildRoles() {
+        GuildController gc = new GuildController(this.guild);
+        HashMap<String, Role> guildRolesByName = getGuildRolesByName(this.guild);
+        // Add roles to Guild if not added jet
+        if(!guildRolesByName.containsKey("HEAL")) {gc.createRole().setName("HEAL").queue();}
+        if(!guildRolesByName.containsKey("TANK")) {gc.createRole().setName("TANK").queue();}
+        if(!guildRolesByName.containsKey("DPS")) {gc.createRole().setName("DPS").queue();}
     }
 
     // Deleting all / all completed keystones
@@ -137,23 +155,23 @@ public class KeystoneHandler {
     // Joining User to a Keystone
     public void joinUser(String id, Member member, EmbedBuilder errorEB, EmbedBuilder keystoneEB) {
         String memberRole = "";
+        String errorTitle = "";
+        String errorDesc = "";
         HashMap<String, Role> memberRoles = getRelevantRoles(getMemberRolesByName(member));
         errorEB.clear();
 
         if(this.keystonesById.get(id).hasMember(member)) {
-            errorEB.setTitle(member.getUser().getName() + " is already in keystone!");
+            errorTitle = member.getUser().getName() + " is already in keystone!";
         }
         else if(memberRoles.isEmpty()) {
-            errorEB.setTitle(member.getUser().getName() + " has no relevant role! Get one before trying to enter a key!");
+            errorTitle = member.getUser().getName() + " has no relevant role! Get one before trying to enter a key!";
         }
         else if(memberRoles.size() > 1)  {
-            errorEB.setTitle("Member has more than 1 relevant Role!");
-            String desc = "";
+            errorTitle = "Member has more than 1 relevant Role!";
             for(String role : memberRoles.keySet()) {
-                desc += "\n" + role;
+                errorDesc += "\n" + role;
             }
-            desc += "\nChoose a role by typing '" + STATIC.PREFIX + "key join " + id + " ROLE [DPS/TANK/HEAL]'";
-            errorEB.setDescription(desc);
+            errorDesc += "\nChoose a role by typing '" + STATIC.PREFIX + "key join " + id + " [ROLE](DPS/TANK/HEAL)'";
         }
         else {
             memberRole = memberRoles.keySet().toString();
@@ -161,14 +179,19 @@ public class KeystoneHandler {
             memberRole = memberRole.replace("]", "");
             this.keystonesById.get(id).join(member.getUser(), memberRole);
             this.keystonesById.get(id).updateMessage(keystoneEB, member.getGuild());
+            errorTitle = "Joined Key!";
+            errorDesc = member.getUser().getName() + " sucessfully joined Key " + id + " as " + memberRole;
             saveKeystonesToFile();
         }
+        errorEB.setTitle(errorTitle);
+        errorEB.setDescription(errorDesc);
     }
 
     // Joining User to a Keystone with given Role
     public void joinUserByRole(String id, Member member, String role, EmbedBuilder errorEB, EmbedBuilder keystoneEB) {
         HashMap<String, Role> memberRoles = getRelevantRoles(getMemberRolesByName(member));
         String ebTitle = "";
+        String ebDesc = "";
         errorEB.clear();
         if(memberRoles.isEmpty()) {
             ebTitle = member.getNickname() + "has no relevant role! Get one before trying to enter a key!";
@@ -177,16 +200,51 @@ public class KeystoneHandler {
             this.keystonesById.get(id).join(member.getUser(), role);
             this.keystonesById.get(id).updateMessage(keystoneEB, member.getGuild());
             saveKeystonesToFile();
-            ebTitle = "Sucessfully joined Key as " + role;
+            ebTitle = "Joined Key!";
+            ebDesc = member.getUser().getName() + " sucessfully joined Key " + id + " as " + role;
         }
         else {
             ebTitle = "Given role " + role + " is not assigned to " + member.getUser().getName() + " make sure you are assinged to the role!";
         }
         errorEB.setTitle(ebTitle);
+        errorEB.setDescription(ebDesc);
+    }
+
+    // Pin the Keystones Message
+    public void pinKeystone(String id) {
+        if(this.containsKeystone(id)) {
+            Keystone ks = this.getKeystone(id);
+            TextChannel tc = this.guild.getTextChannelById(this.keystonesWithChannels.get(ks));
+            Message msg = tc.getMessageById(id).complete();
+            msg.pin().queue();
+            MessageHistory messageHistory = new MessageHistory(tc);
+            messageHistory.retrievePast(1).complete();
+            messageHistory.retrieveFuture(1).complete();
+
+            for (Message message: messageHistory.getRetrievedHistory()) {
+                message.delete().queue();
+            }
+        }
+    }
+
+    // UnPin the Keystones Message
+    public void unpinKeystone(String id) {
+        if(this.containsKeystone(id)) {
+            Keystone ks = this.getKeystone(id);
+            TextChannel tc = this.guild.getTextChannelById(this.keystonesWithChannels.get(ks));
+            Message msg = tc.getMessageById(id).complete();
+            msg.unpin().queue();
+        }
     }
 
     // Update Key
     public void updateKeystone(String id, EmbedBuilder eb) {
+        if(this.keystonesById.get(id).isCompleted()) {
+            unpinKeystone(id);
+        }
+        else {
+            pinKeystone(id);
+        }
         this.keystonesById.get(id).updateMessage(eb, this.guild);
     }
 
@@ -234,16 +292,6 @@ public class KeystoneHandler {
         catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-    }
-
-    // Functions for some Guild and Member - Role things
-    public void checkGuildRoles() {
-        GuildController gc = new GuildController(this.guild);
-        HashMap<String, Role> guildRolesByName = getGuildRolesByName(this.guild);
-        // Add roles to Guild if not added jet
-        if(!guildRolesByName.containsKey("HEAL")) {gc.createRole().setName("HEAL").queue();}
-        if(!guildRolesByName.containsKey("TANK")) {gc.createRole().setName("TANK").queue();}
-        if(!guildRolesByName.containsKey("DPS")) {gc.createRole().setName("DPS").queue();}
     }
 
     public HashMap<String, Role> getMemberRolesByName(Member member){

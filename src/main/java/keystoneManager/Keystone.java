@@ -12,6 +12,7 @@ import java.util.HashMap;
 public class Keystone {
 
     private boolean completed = false;
+    private boolean alerted = false;
     private Message msg;
     private String id;
     private String channelId;
@@ -55,6 +56,14 @@ public class Keystone {
             }
         }
         return false;
+    }
+
+    public boolean isAlerted() {
+        return alerted;
+    }
+
+    public void setAlerted(boolean alerted) {
+        this.alerted = alerted;
     }
 
     @JsonIgnore public boolean isFull() {
@@ -163,11 +172,11 @@ public class Keystone {
 
     public void alertMembers(Guild guild, User user) {
         for (HashMap<String, String> role: roles.values()) {
-            for (Member member: guild.getMembers()) {
-                if(role.containsValue(member.getUser().getName())){
+            for (Member member : guild.getMembers()) {
+                if(role.values().contains(member.getUser().getName())){
                     PrivateChannel pc = member.getUser().openPrivateChannel().complete();
                     pc.sendMessage("User " + user.getName() + " wants to play " + this.fullName + " " + this.level
-                    + " check out the Discord Server " + guild.getName() + " for more information!");
+                    + " check out the Discord Server " + guild.getName() + " for more information!").queue();
                 }
             }
         }
@@ -215,7 +224,6 @@ public class Keystone {
         }
         for (String role : roles.keySet()) {
             try {
-                System.out.println(role + roles.get(role) + "  " + roles.get(role).values());
                 if(roles.get(role).values().isEmpty()) {
                     eb.addField(getRoleIcon(role) + role + getRoleIcon(role), "No " + role + " joined yet!", false);
                 }

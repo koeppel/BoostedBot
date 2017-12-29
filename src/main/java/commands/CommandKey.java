@@ -171,6 +171,7 @@ public class CommandKey implements Command {
                 ks.setAuthorUrl(event.getJDA().getSelfUser().getAvatarUrl());
                 ksh.addKeyStone(keystoneMessage, ks);
                 ksh.joinUser(keystoneMessage.getId(), event.getMember(), errorEB, keystoneEB);
+                ksh.pinKeystone(ks.getId());
                 Message joinErrorMessage = event.getTextChannel().sendMessage(errorEB.build()).complete();
                 clearMessage(joinErrorMessage, 10000);
                 ks.updateMessage(keystoneEB, event.getGuild());
@@ -234,6 +235,9 @@ public class CommandKey implements Command {
         }
         else if(args.length < 2) {
             errorEB.setTitle("No Keystone ID given!");
+        }
+        else if(!ksh.containsKeystone(args[1])) {
+            errorEB.setTitle("Keystone " + args[1] + " doesn't exist!");
         }
         else if(ksh.getAvailableKeystones().get(args[1]).isCompleted()) {
             errorEB.setTitle("Keystone " + args[1] + " already completed");
@@ -340,8 +344,9 @@ public class CommandKey implements Command {
 
         // -- COMPLETE --
         else if (args[0].equals("complete")) {
-            if(!(args.length < 2)) {
+            if(!(args.length < 2) && ksh.containsKeystone(args[1])) {
                 Keystone ks = ksh.getAvailableKeystones().get(args[1]);
+                ksh.unpinKeystone(args[1]);
                 ks.setCompleted(true);
                 ks.updateMessage(keystoneEB, event.getGuild());
                 ksh.saveKeystonesToFile();
