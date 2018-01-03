@@ -1,12 +1,14 @@
 package Utils;
 
-import net.dv8tion.jda.core.EmbedBuilder;
+import AutoChannelManager.AutoChannelHandler;
+import Commands.Admin.CommandAutoChannel;
+import Commands.Everyone.CommandKey;
+import KeystoneManager.KeystoneHandler;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.TextChannel;
 
-import javax.xml.soap.Text;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -38,5 +40,30 @@ public class UTILS {
             }
         }
         return false;
+    }
+
+    public static void loadKeystoneManager(Guild guild) {
+        KeystoneHandler ksh = new KeystoneHandler(guild);
+        ksh.loadKeystonesFromFile();
+        ksh.checkGuildRoles();
+        CommandKey.addKeystoneHandler(guild, ksh);
+    }
+
+    public static void loadAutoChannelManager(Guild guild) {
+        AutoChannelHandler ach = new AutoChannelHandler(guild);
+        ach.loadAutoChannelsFromFile();
+        CommandAutoChannel.addAutoChannelHandler(guild, ach);
+    }
+
+    public static void checkForAdminRole(Guild guild) {
+        boolean addRole = true;
+        for(Role role : guild.getRoles()) {
+            if(role.getName().equals(CONFIG.ADMINROLE_NAME)) {
+                addRole = false;
+            }
+        }
+        if(addRole) {
+            guild.getController().createRole().setName(CONFIG.ADMINROLE_NAME).queue();
+        }
     }
 }

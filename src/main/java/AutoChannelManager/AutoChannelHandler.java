@@ -106,7 +106,6 @@ public class AutoChannelHandler {
         catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("Saved Autochannels!");
     }
 
     public void loadAutoChannelsFromFile() {

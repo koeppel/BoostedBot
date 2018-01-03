@@ -2,6 +2,7 @@ package Listeners;
 
 import Commands.Everyone.CommandKey;
 import KeystoneManager.KeystoneHandler;
+import Utils.UTILS;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
@@ -13,8 +14,8 @@ public class JoinListener extends ListenerAdapter {
                 "Hello I just joined the Server!"
         ).queue();
 
-        KeystoneHandler ksh = new KeystoneHandler(event.getGuild());
-        ksh.checkGuildRoles();
-        CommandKey.addKeystoneHandler(event.getGuild(), ksh);
+        UTILS.loadKeystoneManager(event.getGuild());
+        UTILS.loadAutoChannelManager(event.getGuild());
+        UTILS.checkForAdminRole(event.getGuild());
     }
 }

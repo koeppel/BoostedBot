@@ -5,6 +5,7 @@ import Commands.Admin.CommandAutoChannel;
 import Commands.Everyone.CommandKey;
 import KeystoneManager.KeystoneHandler;
 import Utils.CONFIG;
+import Utils.UTILS;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -18,9 +19,9 @@ public class ReadyListener extends ListenerAdapter implements Serializable {
         System.out.println("Bot Ready!");
 
         for (Guild g : event.getJDA().getGuilds()) {
-            checkForAdminRole(g);
-            loadKeystoneManager(g);
-            loadAutoChannelManager(g);
+            UTILS.checkForAdminRole(g);
+            UTILS.loadKeystoneManager(g);
+            UTILS.loadAutoChannelManager(g);
         }
 
 //        CommandGameChannels.loadChannels(event.getJDA());
@@ -38,31 +39,5 @@ public class ReadyListener extends ListenerAdapter implements Serializable {
 //        for (Guild g : event.getJDA().getGuilds()) {
 //
 //        }
-    }
-
-    private void checkForAdminRole(Guild guild) {
-        boolean addRole = true;
-        for(Role role : guild.getRoles()) {
-            if(role.getName().equals(CONFIG.ADMINROLE_NAME)) {
-                addRole = false;
-            }
-        }
-        if(addRole) {
-            guild.getController().createRole().setName(CONFIG.ADMINROLE_NAME).queue();
-        }
-    }
-
-    private void loadKeystoneManager(Guild guild) {
-            KeystoneHandler ksh = new KeystoneHandler(guild);
-            ksh.loadKeystonesFromFile();
-            ksh.checkGuildRoles();
-
-            CommandKey.addKeystoneHandler(guild, ksh);
-    }
-
-    private void loadAutoChannelManager(Guild guild) {
-        AutoChannelHandler ach = new AutoChannelHandler(guild);
-        ach.loadAutoChannelsFromFile();
-        CommandAutoChannel.addAutoChannelHandler(guild, ach);
     }
 }
