@@ -1,15 +1,15 @@
-package Commands;
+package Commands.Everyone;
 
 import Commands.Command;
 import KeystoneManager.Keystone;
 import KeystoneManager.KeystoneHandler;
+import Utils.STATIC;
+import Utils.UTILS;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import Utils.STATIC;
-import Utils.UTILS;
 
-import java.util.*;
+import java.util.HashMap;
 
 public class CommandKey implements Command {
 
