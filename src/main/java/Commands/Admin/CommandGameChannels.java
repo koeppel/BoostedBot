@@ -17,6 +17,8 @@ public class CommandGameChannels implements Command, Serializable {
 
     private static HashMap<TextChannel, Guild> gameChannels = new HashMap<>();
     private static final String filePath = CONFIG.SAVEPATH;
+
+    // TODO: Clean this up
     private static String fileNameChannels = filePath + "/gamechannels.dat";
 
     public static HashMap<TextChannel, Guild> getGameChannels() {
