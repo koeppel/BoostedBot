@@ -1,6 +1,6 @@
 package Listeners;
 
-import Commands.CommandKey;
+import Commands.Everyone.CommandKey;
 import KeystoneManager.KeystoneHandler;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
