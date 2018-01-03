@@ -13,8 +13,8 @@ import java.util.Map;
 
 public class GameHandler {
     private HashMap<TextChannel, IdleGame> games = new HashMap<>();
-    private static final String filePath = CONFIG.SAVEPATH;
-    private static final String fileName = filePath + "games.dat";
+    private static String filePath = CONFIG.SAVEPATH;
+    private static String fileName = "/games.dat";
     private JDA jda;
     private TextChannel gameChannel;
 
@@ -25,6 +25,7 @@ public class GameHandler {
     public GameHandler(JDA jda, TextChannel gameChannel) {
         this.jda = jda;
         this.gameChannel = gameChannel;
+        fileName = filePath + gameChannel.getGuild().getId() + fileName;
     }
 
     public void run(){

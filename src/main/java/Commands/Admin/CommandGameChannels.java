@@ -17,7 +17,7 @@ public class CommandGameChannels implements Command, Serializable {
 
     private static HashMap<TextChannel, Guild> gameChannels = new HashMap<>();
     private static final String filePath = CONFIG.SAVEPATH;
-    private static final String fileNameChannels = filePath + "gamechannels.dat";
+    private static String fileNameChannels = filePath + "/gamechannels.dat";
 
     public static HashMap<TextChannel, Guild> getGameChannels() {
         return gameChannels;
@@ -63,7 +63,7 @@ public class CommandGameChannels implements Command, Serializable {
             gameChannels.put(gameChannel, g);
             message(tc, String.format("Successfully set channel '%s' as Game Channel", gameChannel.getName()));
             GameHandler gh = new GameHandler(jda, tc);
-            saveChannels();
+            saveChannels(g);
         }
     }
 
@@ -78,14 +78,14 @@ public class CommandGameChannels implements Command, Serializable {
         }
         else {
             gameChannels.remove(gameChannel, g);
-            saveChannels();
+            saveChannels(g);
             message(tc, String.format("Successfully unset Game Channel '%s'", tc.getName()));
         }
     }
 
     public static void unsetChannel(TextChannel gc) {
         gameChannels.remove(gc);
-        saveChannels();
+        saveChannels(gc.getGuild());
     }
 
     private void listChannels(Guild g, TextChannel tc) {
@@ -107,8 +107,9 @@ public class CommandGameChannels implements Command, Serializable {
         UTILS.clearMessage(msg, 3000);
     }
 
-    private static void saveChannels () {
+    private static void saveChannels(Guild guild) {
         File path = new File(filePath);
+        fileNameChannels = filePath + guild.getId() + "/gamechannels.dat";
 
         if (!path.exists()){
             path.mkdir();
@@ -128,8 +129,8 @@ public class CommandGameChannels implements Command, Serializable {
         }
     }
 
-    public static void loadChannels (JDA jda) {
-        File file = new File(fileNameChannels);
+    public static void loadChannels (Guild guild) {
+        File file = new File(filePath + guild.getId() + "/gamechannels.dat");
 
         if (file.exists()) {
             try {
@@ -139,7 +140,7 @@ public class CommandGameChannels implements Command, Serializable {
                 ois.close();
 
                 out.forEach((tid, gid) -> {
-                    Guild g = getGuild(gid, jda);
+                    Guild g = getGuild(gid, guild.getJDA());
                     gameChannels.put(getTextChannel(tid, g), g);
                 });
             }
@@ -155,6 +156,8 @@ public class CommandGameChannels implements Command, Serializable {
     }
 
     @Override
+    // TODO: Change code so that it saves 1 file / guild with the gamechannels of that guild
+
     public void action(String[] args, MessageReceivedEvent event) {
         Guild g = event.getGuild();
         TextChannel tc = event.getTextChannel();

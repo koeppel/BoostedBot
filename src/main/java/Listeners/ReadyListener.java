@@ -25,9 +25,10 @@ public class ReadyListener extends ListenerAdapter implements Serializable {
             UTILS.checkForAdminRole(g);
             UTILS.loadKeystoneManager(g);
             UTILS.loadAutoChannelManager(g);
+            CommandGameChannels.loadChannels(g);
         }
 
-        CommandGameChannels.loadChannels(event.getJDA());
+
 
         HashMap<TextChannel, Guild> gameChannels = CommandGameChannels.getGameChannels();
 
