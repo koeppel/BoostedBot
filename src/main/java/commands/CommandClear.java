@@ -4,6 +4,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageHistory;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import utils.UTILS;
 
 import java.awt.*;
 import java.util.List;
@@ -15,16 +16,6 @@ public class CommandClear implements Command {
     EmbedBuilder error = new EmbedBuilder().setColor(Color.RED);
     EmbedBuilder sucess = new EmbedBuilder().setColor(Color.GREEN);
 
-    private int getInt (String string) {
-        try {
-            return Integer.parseInt(string);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return 0;
-        }
-    }
-
     @Override
     public boolean called(String[] args, MessageReceivedEvent event) {
         return false;
@@ -32,7 +23,7 @@ public class CommandClear implements Command {
 
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
-        int numb = getInt(args[0]);
+        int numb = UTILS.getInt(args[0]);
 
         if (args.length < 1) {
             event.getTextChannel().sendMessage(

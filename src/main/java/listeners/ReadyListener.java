@@ -1,5 +1,7 @@
 package listeners;
 
+import autoChannelManager.AutoChannelHandler;
+import commands.CommandAutoChannel;
 import commands.CommandKey;
 import keystoneManager.KeystoneHandler;
 import net.dv8tion.jda.core.entities.*;
@@ -15,13 +17,9 @@ public class ReadyListener extends ListenerAdapter implements Serializable {
         System.out.println("Bot Ready!");
 
         for (Guild g : event.getJDA().getGuilds()) {
-            KeystoneHandler ksh = new KeystoneHandler(g);
-            ksh.loadKeystonesFromFile();
-            ksh.checkGuildRoles();
-
-            CommandKey.addKeystoneHandler(g, ksh);
+            loadKeystoneManager(g);
+            loadAutoChannelManager(g);
         }
-
 
 //        CommandGameChannels.loadChannels(event.getJDA());
 //
@@ -38,5 +36,19 @@ public class ReadyListener extends ListenerAdapter implements Serializable {
 //        for (Guild g : event.getJDA().getGuilds()) {
 //
 //        }
+    }
+
+    private void loadKeystoneManager(Guild guild) {
+            KeystoneHandler ksh = new KeystoneHandler(guild);
+            ksh.loadKeystonesFromFile();
+            ksh.checkGuildRoles();
+
+            CommandKey.addKeystoneHandler(guild, ksh);
+    }
+
+    private void loadAutoChannelManager(Guild guild) {
+        AutoChannelHandler ach = new AutoChannelHandler(guild);
+        ach.loadAutoChannelsFromFile();
+        CommandAutoChannel.addAutoChannelHandler(guild, ach);
     }
 }

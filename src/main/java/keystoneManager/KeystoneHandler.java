@@ -55,7 +55,7 @@ public class KeystoneHandler {
     // Constructor
     public KeystoneHandler(Guild guild) {
         this.guild = guild;
-        this.fileNameKeystones = filePath + guild.getId() + "_keystones.dat";
+        this.fileNameKeystones = filePath + guild.getId() + "/keystones.dat";
     }
 
     // Adding Keystone to HashMaps / Creating new Keystone

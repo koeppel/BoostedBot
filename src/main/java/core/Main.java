@@ -4,6 +4,7 @@ import commands.*;
 import listeners.CommandListener;
 import listeners.JoinListener;
 import listeners.ReadyListener;
+import listeners.VoiceChannelListener;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -48,12 +49,13 @@ public class Main {
         CommandHandler.commands.put("gameChannels", new CommandGameChannels());
         CommandHandler.commands.put("lvlWorker", new CommandLevelWorker());
         CommandHandler.commands.put("key", new CommandKey());
-        CommandHandler.commands.put("check", new CommandCheckPrice());
+        CommandHandler.commands.put("auto", new CommandAutoChannel());
     }
 
     private static void loadListeners(JDABuilder builder) {
         builder.addEventListener(new ReadyListener());
         builder.addEventListener(new JoinListener());
         builder.addEventListener(new CommandListener());
+        builder.addEventListener(new VoiceChannelListener());
     }
 }

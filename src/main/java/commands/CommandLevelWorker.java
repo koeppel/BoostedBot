@@ -23,7 +23,6 @@ public class CommandLevelWorker implements Command {
             ).queue();
         }
         else {
-
             event.getTextChannel().sendMessage("").queue();
         }
     }

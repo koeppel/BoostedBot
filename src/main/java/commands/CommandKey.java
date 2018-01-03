@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import utils.STATIC;
+import utils.UTILS;
 
 import java.util.*;
 
@@ -119,26 +120,7 @@ public class CommandKey implements Command {
 
         }
         Message msg = textChannel.sendMessage(errorEB.build()).complete();
-        clearMessage(msg, 10000);
-    }
-
-    private int getInt (String string) {
-        try {
-            return Integer.parseInt(string);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return 0;
-        }
-    }
-
-    private void clearMessage(Message msg, int time) {
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                msg.delete().queue();
-            }
-        }, time);
+        UTILS.clearMessage(msg, 10000);
     }
 
     /**
@@ -152,7 +134,7 @@ public class CommandKey implements Command {
             inputError("addKeystone", event.getTextChannel());
         }
         else {
-            int level = getInt(args[1]);
+            int level = UTILS.getInt(args[1]);
             if (level < 2) {
                 inputError("add_level", event.getTextChannel());
             } else if (args[2].isEmpty() || !dungeons.containsKey(args[2])) {
@@ -173,7 +155,7 @@ public class CommandKey implements Command {
                 ksh.joinUser(keystoneMessage.getId(), event.getMember(), errorEB, keystoneEB);
                 ksh.pinKeystone(ks.getId());
                 Message joinErrorMessage = event.getTextChannel().sendMessage(errorEB.build()).complete();
-                clearMessage(joinErrorMessage, 10000);
+                UTILS.clearMessage(joinErrorMessage, 10000);
                 ks.updateMessage(keystoneEB, event.getGuild());
                 ksh.saveKeystonesToFile();
             }
@@ -191,12 +173,12 @@ public class CommandKey implements Command {
             // NO ID GIVEN
             errorEB.setTitle("No Keystone ID given!");
             Message msg = event.getTextChannel().sendMessage(errorEB.build()).complete();
-            clearMessage(msg, 3000);
+            UTILS.clearMessage(msg, 3000);
         }
         else {
             errorEB = ksh.alertKeystone(args[1], event, errorEB);
             Message msg = event.getTextChannel().sendMessage(errorEB.build()).complete();
-            clearMessage(msg, 5000);
+            UTILS.clearMessage(msg, 5000);
         }
     }
 
@@ -219,7 +201,7 @@ public class CommandKey implements Command {
             errorEB.setTitle("Insufficient authority!");
             errorEB.setDescription(event.getMember().getUser().getName() + " has to be " + adminRole + " to clear all Keystones!");
             Message msg = event.getTextChannel().sendMessage(errorEB.build()).complete();
-            clearMessage(msg, 5000);
+            UTILS.clearMessage(msg, 5000);
         }
     }
 
@@ -251,7 +233,7 @@ public class CommandKey implements Command {
                 ksh.joinUserByRole(args[1], member, args[2], errorEB, keystoneEB);
             }
             Message msg = event.getTextChannel().sendMessage(errorEB.build()).complete();
-            clearMessage(msg, 10000);
+            UTILS.clearMessage(msg, 10000);
             ksh.saveKeystonesToFile();
         }
     }
@@ -281,7 +263,7 @@ public class CommandKey implements Command {
                 errorEB.setTitle("You are the creator of the Keystone " + args[1] + "!");
                 errorEB.setDescription("If you realy want to leaveKeystone this Keystone addKeystone a 'F' after the command.");
                 Message msg = event.getTextChannel().sendMessage(errorEB.build()).complete();
-                clearMessage(msg, 5000);
+                UTILS.clearMessage(msg, 5000);
             }
             else {
                 ks.leave(event.getMember().getUser().getId());
@@ -307,7 +289,7 @@ public class CommandKey implements Command {
             }
         }
         Message msg = event.getTextChannel().sendMessage(generalEB.build()).complete();
-        clearMessage(msg, 10000);
+        UTILS.clearMessage(msg, 10000);
     }
 
 
@@ -392,11 +374,11 @@ public class CommandKey implements Command {
             inputError("general", event.getTextChannel());
         }
         // Delete the User Input after 3 secs
-        clearMessage(event.getMessage(), 3000);
+        UTILS.clearMessage(event.getMessage(), 3000);
     }
 
     @Override
-    public void executed(boolean sucess, MessageReceivedEvent event) {
+    public void executed(boolean success, MessageReceivedEvent event) {
 
     }
 
