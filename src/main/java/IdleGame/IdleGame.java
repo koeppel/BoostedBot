@@ -138,7 +138,6 @@ public class IdleGame {
             @Override
             public void run() {
                 updateCash();
-                levelDirk();
                 saveGame();
             }
         },0, 1000 * timeMultiplier);

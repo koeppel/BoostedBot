@@ -51,7 +51,7 @@ public class Main {
 
     private static void loadCommands() {
         CommandHandler.commands.put("clear", new CommandClear());
-        CommandHandler.commands.put("gameChannels", new CommandGameChannels());
+        CommandHandler.commands.put("idleGame", new CommandGameChannels());
         CommandHandler.commands.put("lvlWorker", new CommandLevelWorker());
         CommandHandler.commands.put("key", new CommandKey());
         CommandHandler.commands.put("auto", new CommandAutoChannel());

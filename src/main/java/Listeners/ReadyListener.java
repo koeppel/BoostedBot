@@ -2,7 +2,9 @@ package Listeners;
 
 import AutoChannelManager.AutoChannelHandler;
 import Commands.Admin.CommandAutoChannel;
+import Commands.Admin.CommandGameChannels;
 import Commands.Everyone.CommandKey;
+import IdleGame.GameHandler;
 import KeystoneManager.KeystoneHandler;
 import Utils.CONFIG;
 import Utils.UTILS;
@@ -11,6 +13,7 @@ import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 public class ReadyListener extends ListenerAdapter implements Serializable {
     //private HashMap<TextChannel, Guild> gameChannels = new HashMap<>();
@@ -24,20 +27,16 @@ public class ReadyListener extends ListenerAdapter implements Serializable {
             UTILS.loadAutoChannelManager(g);
         }
 
-//        CommandGameChannels.loadChannels(event.getJDA());
-//
-//        this.gameChannels = CommandGameChannels.getGameChannels();
-//
-//        for (Guild g : event.getJDA().getGuilds()) {
-//            gameChannels.keySet().stream()
-//                .filter(gameChannel -> gameChannels.get(gameChannel).equals(g))
-//                .forEach(gameChannel -> {
-//                    new gameHandler(event.getJDA(), gameChannel).run();
-//                });
-//        }
+        CommandGameChannels.loadChannels(event.getJDA());
 
-//        for (Guild g : event.getJDA().getGuilds()) {
-//
-//        }
+        HashMap<TextChannel, Guild> gameChannels = CommandGameChannels.getGameChannels();
+
+        for (Guild g : event.getJDA().getGuilds()) {
+            gameChannels.keySet().stream()
+                .filter(gameChannel -> gameChannels.get(gameChannel).equals(g))
+                .forEach(gameChannel -> {
+                    new GameHandler(event.getJDA(), gameChannel).run();
+                });
+        }
     }
 }

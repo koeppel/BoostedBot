@@ -1,6 +1,7 @@
 package Commands.Admin;
 
 import Commands.Command;
+import IdleGame.GameHandler;
 import Utils.UTILS;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.JDA;
@@ -49,7 +50,7 @@ public class CommandGameChannels implements Command, Serializable {
         ).queue();
     }
 
-    private void setChannel(String id, Guild g, TextChannel tc) {
+    private void setChannel(String id, Guild g, TextChannel tc, JDA jda) {
         TextChannel gameChannel = getTextChannel(id, g);
 
         if (gameChannel == null) {
@@ -61,6 +62,7 @@ public class CommandGameChannels implements Command, Serializable {
         else {
             gameChannels.put(gameChannel, g);
             message(tc, String.format("Successfully set channel '%s' as Game Channel", gameChannel.getName()));
+            GameHandler gh = new GameHandler(jda, tc);
             saveChannels();
         }
     }
@@ -90,7 +92,7 @@ public class CommandGameChannels implements Command, Serializable {
         StringBuilder sb = new StringBuilder();
 
         if (gameChannels.isEmpty()) {
-            sb.append("No Game Channels found\nStart a new Game Channel with\n**!bbgameChannels set [CHANNEL-ID / CHANNEL-NAME]**");
+            sb.append("No Game Channels found\nStart a new Game Channel with\n**!idleGame set [CHANNEL-ID / CHANNEL-NAME]**");
         } else
         {
             sb.append("**GAME CHANNELS:\n\n**");
@@ -99,9 +101,10 @@ public class CommandGameChannels implements Command, Serializable {
                     .forEach(gameChannel -> sb.append(String.format(":white_small_square: '%s' *(%s)*\n", gameChannel.getName(), gameChannel.getId())));
         }
 
-        tc.sendMessage(
+        Message msg = tc.sendMessage(
                 new EmbedBuilder().setDescription(sb.toString()).build()
-        ).queue();
+        ).complete();
+        UTILS.clearMessage(msg, 3000);
     }
 
     private static void saveChannels () {
@@ -167,7 +170,7 @@ public class CommandGameChannels implements Command, Serializable {
                     listChannels(g, tc);
                     break;
                 case "set":
-                    setChannel(args[1], g, tc);
+                    setChannel(args[1], g, tc, event.getJDA());
                     break;
                 case "unset":
                     unsetChannel(args[1], g, tc);
@@ -179,6 +182,7 @@ public class CommandGameChannels implements Command, Serializable {
             Message msg = event.getTextChannel().sendMessage("NO ADMIN!").complete();
             UTILS.clearMessage(msg, 3000);
         }
+        UTILS.clearMessage(event.getMessage(), 3000);
     }
 
     @Override

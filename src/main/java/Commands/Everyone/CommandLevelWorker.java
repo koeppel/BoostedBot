@@ -24,7 +24,7 @@ public class CommandLevelWorker implements Command {
             ).queue();
         }
         else {
-            event.getTextChannel().sendMessage("").queue();
+            // TODO: ADD CODE FOR LEVELING WORKERS!
         }
     }
 
