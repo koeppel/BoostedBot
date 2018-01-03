@@ -3,7 +3,7 @@ package Core;
 import Commands.CommandAutoChannel;
 import Commands.CommandClear;
 import Commands.CommandGameChannels;
-import Commands.CommandKey;
+import Commands.Everyone.CommandKey;
 import Commands.CommandLevelWorker;
 import Listeners.CommandListener;
 import Listeners.JoinListener;

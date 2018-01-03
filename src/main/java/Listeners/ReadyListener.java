@@ -2,7 +2,7 @@ package Listeners;
 
 import AutoChannelManager.AutoChannelHandler;
 import Commands.CommandAutoChannel;
-import Commands.CommandKey;
+import Commands.Everyone.CommandKey;
 import KeystoneManager.KeystoneHandler;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.ReadyEvent;
