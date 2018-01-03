@@ -3,6 +3,7 @@ package Core;
 import Commands.Admin.CommandAutoChannel;
 import Commands.Admin.CommandClear;
 import Commands.Admin.CommandGameChannels;
+import Commands.CommandHandler;
 import Commands.Everyone.CommandLevelWorker;
 import Commands.Everyone.CommandKey;
 import Listeners.CommandListener;

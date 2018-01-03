@@ -4,6 +4,7 @@ import Commands.Command;
 import KeystoneManager.Keystone;
 import KeystoneManager.KeystoneHandler;
 import Utils.STATIC;
+import Utils.CONFIG;
 import Utils.UTILS;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
@@ -18,7 +19,7 @@ public class CommandKey implements Command {
     private EmbedBuilder errorEB = new EmbedBuilder();
     private EmbedBuilder generalEB = new EmbedBuilder();
     private HashMap<String, String> dungeons = STATIC.DUNGEONS;
-    private String adminRole = STATIC.ADMINROLE;
+    private String adminRole = CONFIG.ADMINROLE_NAME;
 
     public static void addKeystoneHandler(Guild guild, KeystoneHandler ksh) {
         if (!(keystoneHandlerHashMap.containsKey(guild) || keystoneHandlerHashMap.containsValue(ksh))) {
@@ -347,7 +348,7 @@ public class CommandKey implements Command {
                     break;
                 // -- DELETE --
                 case("delete"):
-                    if(!(args.length < 2) && event.getMember().getRoles().contains(adminRole)) {
+                    if(!(args.length < 2) && UTILS.isAdmin(event.getMember())) {
                         ksh.deleteKeyStone(args[1]);
                         ksh.saveKeystonesToFile();
                     }

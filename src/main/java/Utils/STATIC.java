@@ -5,7 +5,6 @@ import java.util.*;
 public class STATIC {
 
     public static final String PREFIX = "!";
-    public static final String ADMINROLE = "admin";
     public static final String COMPLETEDURL = "http://t5.rbxcdn.com/78a4211079921cd8604d573ea33f48c3";
     public static final String KEYSTONEURL = "http://wow.zamimg.com/images/wow/icons/large/inv_relics_hourglass.jpg";
 

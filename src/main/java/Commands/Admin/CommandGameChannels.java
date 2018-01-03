@@ -1,6 +1,7 @@
 package Commands.Admin;
 
 import Commands.Command;
+import Utils.UTILS;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
@@ -160,17 +161,23 @@ public class CommandGameChannels implements Command, Serializable {
             error(tc, help());
             return;
         }
-
-        switch(args[0]) {
-            case "list":
-                listChannels(g, tc);
-                break;
-            case "set":
-                setChannel(args[1], g, tc);
-                break;
-            case "unset":
-                unsetChannel(args[1], g, tc);
-                break;
+        else if(UTILS.isAdmin(event.getMember())) {
+            switch(args[0]) {
+                case "list":
+                    listChannels(g, tc);
+                    break;
+                case "set":
+                    setChannel(args[1], g, tc);
+                    break;
+                case "unset":
+                    unsetChannel(args[1], g, tc);
+                    break;
+            }
+        }
+        else {
+            // TODO: ADD a better Error-Message with List of arguments
+            Message msg = event.getTextChannel().sendMessage("NO ADMIN!").complete();
+            UTILS.clearMessage(msg, 3000);
         }
     }
 

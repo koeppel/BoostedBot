@@ -1,6 +1,6 @@
 package Listeners;
 
-import Core.*;
+import Commands.CommandHandler;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import Utils.STATIC;

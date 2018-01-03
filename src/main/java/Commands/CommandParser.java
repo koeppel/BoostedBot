@@ -1,4 +1,4 @@
-package Core;
+package Commands;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import Utils.STATIC;

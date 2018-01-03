@@ -3,6 +3,7 @@ package Commands.Admin;
 import AutoChannelManager.AutoChannelHandler;
 import Commands.Command;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import Utils.UTILS;
@@ -79,23 +80,34 @@ public class CommandAutoChannel implements Command {
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
         if(!(args.length < 1)) {
-            switch(args[0]) {
-                case("set"):
-                case("add"):
-                    setAutoChannel(args, event);
-                    break;
-                case("unset"):
-                case("remove"):
-                    unsetAutoChannel(args, event);
-                    break;
-                case("list"):
-                    listAutoChannel(event);
-                    break;
-                default:
+            if(UTILS.isAdmin(event.getMember())){
+                switch(args[0]) {
+                    case("set"):
+                    case("add"):
+                        setAutoChannel(args, event);
+                        break;
+                    case("unset"):
+                    case("remove"):
+                        unsetAutoChannel(args, event);
+                        break;
+                    case("list"):
+                        listAutoChannel(event);
+                        break;
+                    default:
+                        // TODO: ADD a better Error-Message with List of arguments
+                        break;
+                }
+            }
+            else {
+                // TODO: ADD a better Error-Message with List of arguments
+                Message msg = event.getTextChannel().sendMessage("NO ADMIN!").complete();
+                UTILS.clearMessage(msg, 3000);
             }
         }
         else {
-
+            // TODO: ADD a better Error-Message with List of arguments
+            Message msg = event.getTextChannel().sendMessage("Missing arguements!").complete();
+            UTILS.clearMessage(msg, 3000);
         }
         UTILS.clearMessage(event.getMessage(), 3000);
     }

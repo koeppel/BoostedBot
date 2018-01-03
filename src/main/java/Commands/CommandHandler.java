@@ -1,6 +1,5 @@
-package Core;
+package Commands;
 
-import Commands.Command;
 import net.dv8tion.jda.core.entities.Message;
 
 import java.util.HashMap;

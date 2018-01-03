@@ -1,6 +1,7 @@
 package Commands.Admin;
 
 import Commands.Command;
+import Utils.CONFIG;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageHistory;
@@ -24,47 +25,49 @@ public class CommandClear implements Command {
 
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
-        int numb = UTILS.getInt(args[0]);
-
         if (args.length < 1) {
-            event.getTextChannel().sendMessage(
+            Message msg = event.getTextChannel().sendMessage(
                     error.setDescription("Please enter a number of messages you want to delete!").build()
-            ).queue();
+            ).complete();
+            UTILS.clearMessage(msg, 5000);
         }
-        else if (numb > 1 && numb <= 100) {
-            try {
-                MessageHistory history = new MessageHistory(event.getTextChannel());
-                List<Message> msgs;
+        else if(UTILS.isAdmin(event.getMember())){
+            int numb = UTILS.getInt(args[0]);
+            if (numb > 1 && numb <= 100) {
+                try {
+                    MessageHistory history = new MessageHistory(event.getTextChannel());
+                    List<Message> msgs;
 
-                msgs = history.retrievePast(numb).complete();
-                event.getTextChannel().deleteMessages(msgs).queue();
+                    msgs = history.retrievePast(numb).complete();
+                    event.getTextChannel().deleteMessages(msgs).queue();
 
+                    Message msg = event.getTextChannel().sendMessage(
+                            sucess.setDescription("Deleted " + args[0] + " messages!").build()
+                    ).complete();
+
+                    UTILS.clearMessage(msg, 3000);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
                 Message msg = event.getTextChannel().sendMessage(
-                        sucess.setDescription("Deleted " + args[0] + " messages!").build()
+                        error.setDescription("Please enter a number between 2 and 100").build()
                 ).complete();
-
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        msg.delete().queue();
-                    }
-                }, 3000);
-
-            }
-            catch(Exception e) {
-                e.printStackTrace();
+                UTILS.clearMessage(msg, 3000);
             }
         }
         else {
             event.getTextChannel().sendMessage(
-                    error.setDescription("Please enter a number between 2 and 100").build()
+                    error.setDescription("No admin Role!").build()
             ).queue();
         }
+        UTILS.clearMessage(event.getMessage(), 3000);
     }
 
     @Override
-    public void executed(boolean sucess, MessageReceivedEvent event) {
-        System.out.println("[INFO] Command '!bbclear' was executed!");
+    public void executed(boolean success, MessageReceivedEvent event) {
+        System.out.println("[INFO] Command '!clear' was executed!");
     }
 
     @Override
