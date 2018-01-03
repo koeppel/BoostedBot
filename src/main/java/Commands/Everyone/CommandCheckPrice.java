@@ -1,9 +1,10 @@
-package Commands;
+package Commands.Everyone;
 
+import Commands.Command;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import PriceChecker.PriceChecker;
 
-public class CommandCheckPrice implements Command{
+public class CommandCheckPrice implements Command {
 
     @Override
     public boolean called(String[] args, MessageReceivedEvent event) {

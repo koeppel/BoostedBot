@@ -1,7 +1,10 @@
 package Utils;
 
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
 
+import javax.xml.soap.Text;
 import java.util.Timer;
 import java.util.TimerTask;
 

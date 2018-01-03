@@ -1,5 +1,6 @@
-package Commands;
+package Commands.Admin;
 
+import Commands.Command;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageHistory;

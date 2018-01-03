@@ -1,6 +1,7 @@
-package Commands;
+package Commands.Admin;
 
 import AutoChannelManager.AutoChannelHandler;
+import Commands.Command;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -78,17 +79,19 @@ public class CommandAutoChannel implements Command {
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
         if(!(args.length < 1)) {
-            if(args[0].equals("set")) {
-                setAutoChannel(args, event);
-            }
-            else if(args[0].equals("unset")) {
-                unsetAutoChannel(args, event);
-            }
-            else if(args[0].equals("list")) {
-                listAutoChannel(event);
-            }
-            else {
-
+            switch(args[0]) {
+                case("set"):
+                case("add"):
+                    setAutoChannel(args, event);
+                    break;
+                case("unset"):
+                case("remove"):
+                    unsetAutoChannel(args, event);
+                    break;
+                case("list"):
+                    listAutoChannel(event);
+                    break;
+                default:
             }
         }
         else {

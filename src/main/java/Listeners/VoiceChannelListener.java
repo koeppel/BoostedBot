@@ -1,7 +1,7 @@
 package Listeners;
 
 import AutoChannelManager.AutoChannelHandler;
-import Commands.CommandAutoChannel;
+import Commands.Admin.CommandAutoChannel;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.channel.voice.VoiceChannelDeleteEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent;
