@@ -24,8 +24,7 @@
 hs_err_pid*
 
 /src/main/java/utils/SECRETS.java
-/SERVER_SETTINGS/*.dat
-/SERVER_SETTINGS/369446002106695680/
+/SERVER_SETTINGS/369446002106695680/*.dat
 .idea/workspace.xml
 src/test/
 target/
