@@ -1,6 +1,10 @@
 package Core;
 
-import Commands.*;
+import Commands.Admin.CommandAutoChannel;
+import Commands.Admin.CommandClear;
+import Commands.Admin.CommandGameChannels;
+import Commands.Everyone.CommandKey;
+import Commands.Everyone.CommandLevelWorker;
 import Listeners.CommandListener;
 import Listeners.JoinListener;
 import Listeners.ReadyListener;

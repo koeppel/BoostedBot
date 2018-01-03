@@ -1,5 +1,6 @@
-package Commands;
+package Commands.Everyone;
 
+import Commands.Command;
 import KeystoneManager.Keystone;
 import KeystoneManager.KeystoneHandler;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -308,72 +309,67 @@ public class CommandKey implements Command {
         if (args.length < 1) {
             inputError("general", event.getTextChannel());
         }
-
-        // -- ADD --
-        else if (args[0].equals("add")) {
-            addKeystone(args, event, ksh);
-        }
-
-        // - ALERT
-        else if (args[0].equals("alert")) {
-            alertKeystone(args, event, ksh);
-        }
-
-        // -- CLEAR
-        else if(args[0].equals("clear")) {
-            clearKeystones(args, event, ksh);
-        }
-
-        // -- COMPLETE --
-        else if (args[0].equals("complete")) {
-            if(!(args.length < 2) && ksh.containsKeystone(args[1])) {
-                Keystone ks = ksh.getAvailableKeystones().get(args[1]);
-                ksh.unpinKeystone(args[1]);
-                ks.setCompleted(true);
-                ks.updateMessage(keystoneEB, event.getGuild());
-                ksh.saveKeystonesToFile();
-            }
-        }
-
-        // -- DELETE
-        else if(args[0].equals("delete")) {
-            if(!(args.length < 2)) {
-                ksh.deleteKeyStone(args[1]);
-                ksh.saveKeystonesToFile();
-            }
-        }
-
-        // -- EDIT @TODO: ADD THE EDIT FEATURE
-        else if (args[0].equals("edit")) {
-            errorEB.setTitle("Feature not available yet");
-        }
-
-        // -- JOIN --
-        else if (args[0].equals("join")) {
-            joinKeystone(args, event, ksh);
-        }
-
-        // -- LEAVE --
-        else if (args[0].equals("leave")) {
-            leaveKeystone(args, event, ksh);
-        }
-
-        // -- LIST --
-        else if (args[0].equals("list")) {
-            listKeystones(event, ksh);
-        }
-
-        // -- UPDATE
-        else if(args[0].equals("update")) {
-            if(!(args.length < 2)) {
-                ksh.updateKeystone(args[1], keystoneEB);
-                ksh.saveKeystonesToFile();
-            }
-        }
         else {
-            inputError("general", event.getTextChannel());
+            switch(args[0]) {
+                // -- ADD --
+                case("add"):
+                case("create"):
+                    addKeystone(args, event, ksh);
+                    break;
+                // -- ALERT --
+                case("alert"):
+                case("notify"):
+                    alertKeystone(args, event, ksh);
+                    break;
+                // -- CLEAR --
+                case("clear"):
+                    clearKeystones(args, event, ksh);
+                    break;
+                // -- COMPLETE --
+                case("complete"):
+                    if(!(args.length < 2) && ksh.containsKeystone(args[1])) {
+                        Keystone ks = ksh.getAvailableKeystones().get(args[1]);
+                        ksh.unpinKeystone(args[1]);
+                        ks.setCompleted(true);
+                        ks.updateMessage(keystoneEB, event.getGuild());
+                        ksh.saveKeystonesToFile();
+                    }
+                    break;
+                // -- DELETE --
+                case("delete"):
+                    if(!(args.length < 2) && event.getMember().getRoles().contains(adminRole)) {
+                        ksh.deleteKeyStone(args[1]);
+                        ksh.saveKeystonesToFile();
+                    }
+                    break;
+                // -- EDIT -- @TODO: ADD THE EDIT FEATURE
+                case("edit"):
+                    errorEB.setTitle("Feature not available yet");
+                    break;
+                // -- JOIN --
+                case("join"):
+                    joinKeystone(args, event, ksh);
+                    break;
+                // -- LEAVE --
+                case("leave"):
+                    leaveKeystone(args, event, ksh);
+                    break;
+                // -- LIST --
+                case("list"):
+                    listKeystones(event, ksh);
+                    break;
+                // -- UPDATE --
+                case("update"):
+                    if(!(args.length < 2)) {
+                        ksh.updateKeystone(args[1], keystoneEB);
+                        ksh.saveKeystonesToFile();
+                    }
+                    break;
+                default:
+                    inputError("general", event.getTextChannel());
+            }
         }
-        // Delete the User Input after 3 secs
+
         UTILS.clearMessage(event.getMessage(), 3000);
     }
 
