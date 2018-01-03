@@ -1,4 +1,4 @@
-package Commands.Everyone;
+package Commands;
 
 import Commands.Command;
 import KeystoneManager.Keystone;
@@ -38,87 +38,91 @@ public class CommandKey implements Command {
         keystoneEB.setAuthor("Keystone Manager", null, avatarUrl);
     }
 
-    private void setListOfArguments(String type) {
-        if (type.equals("general")) {
-            generalEB.addField(new MessageEmbed.Field("addKeystone [LVL] [KEY] [SEL]",
-                    "Adds a Key with the given arguments:" +
-                            "\n:black_small_square:  LVL - The Level of the Key +10 / +15 etc." +
-                            "\n:black_small_square:  KEY - The Name of the Key DHT / BRH etc." +
-                            "\n:black_small_square:  SEL - Is it a sellrun? Y/N (default N)"
-                    , false));
-            generalEB.addField(new MessageEmbed.Field("joinKeystone [ID]", "Allows you to joinKeystone the Key with given ID.", false));
-            generalEB.addField(new MessageEmbed.Field("joinKeystone [ID]", "Allows you to leaveKeystone the Key with given ID.", false));
-            generalEB.addField(new MessageEmbed.Field("complete [ID]", "Allows you to set a Key with given ID to completed.", false));
-            generalEB.addField(new MessageEmbed.Field("edit [ID]", "Allows you to edit a Key with given ID.", false));
-        }
-        else if (type.equals("addKeystone")) {
-            generalEB.addField(new MessageEmbed.Field("addKeystone [LVL] [KEY] [SEL]",
-                    "Adds a Key with the given arguments:" +
-                            "\n:black_small_square:  LVL - The Level of the Key +10 / +15 etc. (min 2)" +
-                            "\n:black_small_square:  KEY - The Name of the Key DHT / BRH etc." +
-                            "\n:black_small_square:  SEL - Is it a sellrun? Y/N (default N)"
-                    , false));
-        }
-        else if (type.equals("add_level")) {
-            generalEB.addField(new MessageEmbed.Field("addKeystone [LVL] [KEY] [SEL]",
-                    "Adds a Key with the given arguments:" +
-                            "\n:black_small_square:  LVL - The Level of the Key (10 / 15 etc.; min 2)"
-                    , false));
-        }
-        else if (type.equals("add_dungeon")) {
-            String dungeonPrint = "";
-            generalEB.addField(new MessageEmbed.Field("addKeystone [LVL] [KEY] [SEL]",
-                    "Adds a Key with the given arguments:" +
-                            "\n:black_small_square:  KEY - The Name of the Key (DHT / BRH etc.)"
-                    , false));
-            for (String dungeon: dungeons.keySet()) {
-                dungeonPrint += ":black_small_square:" + dungeon + " - " + dungeons.get(dungeon) + "\n";
-            }
-            generalEB.addField(new MessageEmbed.Field("Dungeons:",dungeonPrint,false));
-        }
-        else if (type.equals("joinKeystone")) {
+    private void setListOfArguments(String type, EmbedBuilder embedBuilder) {
+        switch(type) {
+            case("general"):
+                embedBuilder.addField(new MessageEmbed.Field("add [LVL] [KEY] [SEL]",
+                        "Adds a Key with the given arguments:" +
+                                "\n:black_small_square:  LVL - The Level of the Key +10 / +15 etc." +
+                                "\n:black_small_square:  KEY - The Name of the Key DHT / BRH etc." +
+                                "\n:black_small_square:  SEL - Is it a sellrun? Y/N (default N)"
+                        , false));
 
-        }
-        else if (type.equals("complete")) {
+                embedBuilder.addField(new MessageEmbed.Field("complete [ID]",
+                        "Allows you to set a Key with given ID to completed.",
+                        false));
 
-        }
-        else if (type.equals("edit")) {
+                embedBuilder.addField(new MessageEmbed.Field("edit [ID]",
+                        "Allows you to edit a Key with given ID.",
+                        false));
+
+                embedBuilder.addField(new MessageEmbed.Field("join [ID] [ROLE]",
+                        "Allows You to join the Key with given ID and ROLE if You have more than 1:" +
+                                "\n:black_small_square: TANK" +
+                                "\n:black_small_square: HEAL" +
+                                "\n:black_small_square: DPS",
+                        false));
+
+                embedBuilder.addField(new MessageEmbed.Field("leave [ID]",
+                        "Allows you to leave the Key with given ID.",
+                        false));
+
+                embedBuilder.addField(new MessageEmbed.Field("list",
+                        "Lists all open Keystones.",
+                        false));
+                break;
+            case("addKeystone"):
+                embedBuilder.addField(new MessageEmbed.Field("addKeystone [LVL] [KEY] [SEL]",
+                        "Adds a Key with the given arguments:" +
+                                "\n:black_small_square:  LVL - The Level of the Key +10 / +15 etc. (min 2)" +
+                                "\n:black_small_square:  KEY - The Name of the Key DHT / BRH etc." +
+                                "\n:black_small_square:  SEL - Is it a sellrun? Y/N (default N)"
+                        , false));
+                break;
+            case("add_level"):
+                embedBuilder.addField(new MessageEmbed.Field("addKeystone [LVL] [KEY] [SEL]",
+                        "Adds a Key with the given arguments:" +
+                                "\n:black_small_square:  LVL - The Level of the Key (10 / 15 etc.; min 2)"
+                        , false));
+                break;
+            case("add_dungeon"):
+                String dungeonPrint = "";
+                embedBuilder.addField(new MessageEmbed.Field("addKeystone [LVL] [KEY] [SEL]",
+                        "Adds a Key with the given arguments:" +
+                                "\n:black_small_square:  KEY - The Name of the Key (DHT / BRH etc.)"
+                        , false));
+                for (String dungeon: dungeons.keySet()) {
+                    dungeonPrint += ":black_small_square:" + dungeon + " - " + dungeons.get(dungeon) + "\n";
+                }
+                embedBuilder.addField(new MessageEmbed.Field("Dungeons:", dungeonPrint,false));
+                break;
 
         }
     }
 
     private void inputError(String type, TextChannel textChannel) {
-        if (type.equals("general")) {
-            errorEB.setTitle(":x: Whoops, looks like something went wrong! :x:");
-            errorEB.setDescription("You've entered an wrong argument or no argument at all. Here is a listKeystones of valid arguments:");
-            setListOfArguments(type);
-        }
-        else if (type.equals("addKeystone")) {
-            errorEB.setTitle(":x: Whoops, looks like something went wrong! :x:");
-            errorEB.setDescription("You've entered an wrong argument!");
-            setListOfArguments(type);
-        }
-        else if (type.equals("add_level")) {
-            errorEB.setTitle(":x: Whoops, looks like something went wrong! :x:");
-            errorEB.setDescription("You've entered an wrong argument! Key-Level is to low or not set at all!");
-            setListOfArguments(type);
-        }
-        else if (type.equals("add_dungeon")) {
-            errorEB.setTitle(":x: Whoops, looks like something went wrong! :x:");
-            errorEB.setDescription("You've entered an wrong argument! Key-Dungeon was not found in the Dungeon listKeystones!");
-            setListOfArguments(type);
-        }
-        else if (type.equals("joinKeystone")) {
 
-        }
-        else if (type.equals("leaveKeystone")) {
-
-        }
-        else if (type.equals("complete")) {
-
-        }
-        else if (type.equals("edit")) {
-
+        switch (type) {
+            case("general"):
+                errorEB.setTitle(":x: Whoops, looks like something went wrong! :x:");
+                errorEB.setDescription("You've entered an wrong argument or no argument at all. Here is a listKeystones of valid arguments:");
+                setListOfArguments(type, errorEB);
+                break;
+            case("addKeystone"):
+                errorEB.setTitle(":x: Whoops, looks like something went wrong! :x:");
+                errorEB.setDescription("You've entered an wrong argument!");
+                setListOfArguments(type, errorEB);
+                break;
+            case("add_level"):
+                errorEB.setTitle(":x: Whoops, looks like something went wrong! :x:");
+                errorEB.setDescription("You've entered an wrong argument! Key-Level is to low or not set at all!");
+                setListOfArguments(type, errorEB);
+                break;
+            case("add_dungeon"):
+                errorEB.setTitle(":x: Whoops, looks like something went wrong! :x:");
+                errorEB.setDescription("You've entered an wrong argument! Key-Dungeon was not found in the Dungeon listKeystones!");
+                setListOfArguments(type, errorEB);
+                break;
         }
         Message msg = textChannel.sendMessage(errorEB.build()).complete();
         UTILS.clearMessage(msg, 10000);
@@ -248,12 +252,18 @@ public class CommandKey implements Command {
     private void leaveKeystone(String[] args, MessageReceivedEvent event, KeystoneHandler ksh) {
         if (ksh.getAvailableKeystones().isEmpty()) {
             errorEB.setTitle("No open Keystones");
+            Message msg = event.getTextChannel().sendMessage(errorEB.build()).complete();
+            UTILS.clearMessage(msg, 5000);
         }
         else if(args.length < 2) {
             errorEB.setTitle("No Keystone ID given!");
+            Message msg = event.getTextChannel().sendMessage(errorEB.build()).complete();
+            UTILS.clearMessage(msg, 5000);
         }
         else if(ksh.getAvailableKeystones().get(args[1]).isCompleted()) {
-            generalEB.setTitle("Keystone " + args[1] + " already completed, no need to leaveKeystone.");
+            errorEB.setTitle("Keystone " + args[1] + " already completed, no need to leaveKeystone.");
+            Message msg = event.getTextChannel().sendMessage(errorEB.build()).complete();
+            UTILS.clearMessage(msg, 5000);
         }
         else {
             Keystone ks = ksh.getAvailableKeystones().get(args[1]);
@@ -345,6 +355,12 @@ public class CommandKey implements Command {
                 // -- EDIT -- @TODO: ADD THE EDIT FEATURE
                 case("edit"):
                     errorEB.setTitle("Feature not available yet");
+                    break;
+                // -- HELP --
+                case("help"):
+                    generalEB.setTitle("List of Arguments:");
+                    setListOfArguments("general", generalEB);
+                    event.getMember().getUser().openPrivateChannel().complete().sendMessage(generalEB.build()).queue();
                     break;
                 // -- JOIN --
                 case("join"):
