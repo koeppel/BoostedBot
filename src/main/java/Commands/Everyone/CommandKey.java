@@ -1,4 +1,4 @@
-package Commands;
+package Commands.Everyone;
 
 import Commands.Command;
 import KeystoneManager.Keystone;
